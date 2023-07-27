@@ -1,0 +1,116 @@
+<div class="container">
+    <div class="row mt-3 text-right mb-3">
+      <div class="col-12 text-right">
+        <button type="button" class="btn" (click)="goBack()">
+          <i class="fa fa-chevron-left"></i>&nbsp;Back</button>
+      </div>
+    </div>
+    <h2 class="mb-4">Passenger Details <ng-container *ngIf="busCode != ''">(Bus Code: {{busCode}})</ng-container></h2>
+  
+    <div class="row mb-3">
+      <div class="col-8">
+        <input type="text" class="col-7" placeholder="Search by Passenger Name or Email" [(ngModel)]="searchText"
+         (keyup)="filterPassengerDetails()">
+      </div>
+      <div class="col-4 text-right">
+        <button type="button" class="btn btn-info" *ngIf="!showAllPassengers" data-toggle="modal" data-target="#addPassenger" 
+          (click)="savePassengerDetailsModal()">Add Passenger</button>
+      </div>
+    </div>
+  
+    <table class="table table-striped" *ngIf="passengerList != null && passengerList.length > 0">
+      <thead>
+        <tr>
+          <th>Sl #</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th *ngIf="showAllPassengers">Bus Code</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let passenger of passengerList; let j=index">
+          <td>{{j+1}}</td>
+          <td>{{passenger.name}}</td>
+          <td>{{passenger.email}}</td>
+          <td *ngIf="showAllPassengers">{{passenger.busCode}}</td>
+          <td>
+            <span class="fa fa-pencil text-primary pointer"
+             (click)="updatePassengerDetailsModal(passenger)"></span>
+          </td>
+          <td>
+            <span class="fa fa-trash text-danger pointer"
+             (click)="deletePassengerDetailsModal(passenger.id, passenger.name)"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="passengerList == null || passengerList.length == 0" class="text-center margin-top-150">
+      <h4 *ngIf="!showAllPassengers">Passenger Details are not added for selected transport, please add one.</h4>
+      <h4 *ngIf="showAllPassengers">Passenger Details are not available.</h4>
+    </div>
+  </div>
+
+  <!-- Modal for adding passenger -->
+  <div id="addPassenger" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            <ng-container *ngIf="addPassenger">Add Passenger Details</ng-container>
+            <ng-container *ngIf="!addPassenger">Update Passenger Details</ng-container>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="passengerDetails">
+            <div class="row col-12">
+              <label for="passenger-name" class="col-4">Name: </label>
+              <input id="passenger-name" type="text" class="col-5" formControlName="name">
+            </div>
+            <div class="row col-12">&nbsp;</div>
+            <div class="row col-12">
+              <label for="passenger-email" class="col-4">Email: </label>
+              <input id="passenger-email" type="email" class="col-5" formControlName="email">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" *ngIf="addPassenger" (click)="savePassengerDetails()" [disabled]=
+            "passengerDetails.invalid" data-dismiss="modal"><i class="fa fa-save"></i>&nbsp;Save</button>
+          <button type="button" class="btn btn-success" *ngIf="!addPassenger" (click)="updatePassengerDetails()" [disabled]=
+            "passengerDetails.invalid" data-dismiss="modal"><i class="fa fa-save"></i>&nbsp;Update</button>
+          <button type="button" class="btn btn-danger" (click)="passengerDetails.reset()">
+            <i class="fa fa-refresh"></i>&nbsp;Reset</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+  <!-- Modal for deleting passenger -->
+  <div id="deletePassenger" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header bg-danger">
+          <h4 class="modal-title">Delete Confirmation</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete {{passengerName}}?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" (click)="deletePassengerDetails()"
+           data-dismiss="modal"><i class="fa fa-thumbs-up"></i>&nbsp;Ok</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <i class="fa fa-times"></i>&nbsp;Cancel</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
